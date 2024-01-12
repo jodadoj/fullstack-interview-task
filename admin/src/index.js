@@ -57,6 +57,8 @@ app.get("/investments/:id", async (req, res) => {
     for (const holding in investments.holdings){
       const holdingPercentage = investments.holdings[holding].investmentPercentage
       console.log(holdingPercentage)
+      const investmentValue = holdingPercentage * investments.investmentTotal
+      console.log(investmentValue)
     }
 
     res.send(investments)
