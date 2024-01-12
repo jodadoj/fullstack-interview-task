@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@mft/eslint-config-momentumft": "^4.0.0",
-    "eslint": "^7.19.0",
+    "eslint": "^5.4.0",
     "nodemon": "^2.0.7"
   }
 }
