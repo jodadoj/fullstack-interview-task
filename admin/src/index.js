@@ -115,3 +115,5 @@ app.listen(config.port, (err) => {
   }
   console.log(`Server running on port ${config.port}`)
 })
+
+module.exports = { fetchInvestment, app }
