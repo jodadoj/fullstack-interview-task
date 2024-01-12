@@ -29,7 +29,7 @@ function fetchCompany(id){
   return new Promise((resolve, reject) => {
     request.get(
     {
-      url: `${config.financialCompaniesServiceUrl}/companies/${currentId}`, 
+      url: `${config.financialCompaniesServiceUrl}/companies/${id}`, 
       json: true
     }, (e, r, companyBody) => {
     if (e) {
