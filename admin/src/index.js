@@ -48,45 +48,51 @@ app.get("/investments/:id", async (req, res) => {
           resolve(companyResponse)
         })
       })
-      console.table(company)
-      companyData.push(company)
-    }
+    console.table(company)
+    companyData.push(company)
+  }
 
-    console.table(companyData)
+  console.table(companyData)
 
-    //want {csv: 'user, first name, last name, date, holding, value} in csv format
+  //want {csv: 'user, first name, last name, date, holding, value} in csv format
 
-    const headers = (
-      "User, First Name, Last Name, Date, Holding, Value\n"
+  const headers = (
+    "User, First Name, Last Name, Date, Holding, Value\n"
+  )
+  const rowStrings = []
+
+  for (const holding in investments.holdings){
+    const currentHolding = investments.holdings[holding]
+    const holdingPercentage = currentHolding.investmentPercentage
+    console.log(holdingPercentage)
+    const investmentValue = holdingPercentage * investments.investmentTotal
+    console.log(investmentValue)
+
+    const holdingCSV = (
+      `${investments.userId},` +
+      `${investments.firstName},` +
+      `${investments.lastName},` +
+      `${investments.date},` +
+      //holdings will enter the companyData list at the same index as originally found
+      //this method is therefore safer than manipulation using index asuuming awaits work as intended
+      `${companyData[holding].name},` + 
+      `${investmentValue}\n`
     )
 
-    for (const holding in investments.holdings){
-      const currentHolding = investments.holdings[holding]
-      const holdingPercentage = currentHolding.investmentPercentage
-      console.log(holdingPercentage)
-      const investmentValue = holdingPercentage * investments.investmentTotal
-      console.log(investmentValue)
+    console.log(holdingCSV)
+    rowStrings.push(holdingCSV)
+  }
 
-      const holdingCSV = (
-        `${investments.userId},` +
-        `${investments.firstName},` +
-        `${investments.lastName},` +
-        `${investments.date},` +
-        //holdings will enter the companyData list at the same index as originally found
-        //this method is therefore safer than manipulation using index asuuming awaits work as intended
-        `${companyData[holding].name},` + 
-        `${investmentValue}\n`
-      )
+  const exportCSVBody = [headers, rowStrings.join("")].join("")
 
-      console.log(holdingCSV)
-    }
+  console.log(exportCSVBody)
 
   //may need await
   request.post(
   {
     url: `${config.investmentsServiceUrl}/investments/export`, 
     json: true,
-    body: {csv: headers}
+    body: {csv: exportCSVBody}
   }, (e, r, body) => {
     if (e) {
       console.error(e)
@@ -95,7 +101,7 @@ app.get("/investments/:id", async (req, res) => {
   })
 
 
-  res.send(investments)
+  res.json({csv: exportCSVBody})
 })
 
 app.listen(config.port, (err) => {
