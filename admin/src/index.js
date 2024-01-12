@@ -61,10 +61,24 @@ app.get("/investments/:id", async (req, res) => {
     )
 
     for (const holding in investments.holdings){
-      const holdingPercentage = investments.holdings[holding].investmentPercentage
+      const currentHolding = investments.holdings[holding]
+      const holdingPercentage = currentHolding.investmentPercentage
       console.log(holdingPercentage)
       const investmentValue = holdingPercentage * investments.investmentTotal
       console.log(investmentValue)
+
+      const holdingCSV = (
+        `${investments.userId},` +
+        `${investments.firstName},` +
+        `${investments.lastName},` +
+        `${investments.date},` +
+        //holdings will enter the companyData list at the same index as originally found
+        //this method is therefore safer than manipulation using index asuuming awaits work as intended
+        `${companyData[holding].name},` + 
+        `${investmentValue}\n`
+      )
+
+      console.log(holdingCSV)
     }
 
   //may need await
