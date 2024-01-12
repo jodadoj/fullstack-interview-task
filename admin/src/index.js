@@ -67,21 +67,23 @@ app.get("/investments/:id", async (req, res) => {
       {
         url: `${config.investmentsServiceUrl}/investments/export`, 
         json: true,
-        exportBody: investments
-      }, (e, r, exportBody) => {
+        body: investments
+      }, (e, r, body) => {
     if (e) {
       console.error(e)
       res.send(500)
       reject(e)
     }
-      const exportResponse = exportBody
+      console.table(body)
+      const exportResponse = body
+      console.table(exportResponse)
       resolve(exportResponse)
     })
   })
 
 
-    res.send(exportJson)
-  })
+  res.send(exportJson)
+})
 
 app.listen(config.port, (err) => {
   if (err) {
