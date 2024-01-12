@@ -9,7 +9,7 @@ app.use(bodyParser.json({limit: "10mb"}))
 
 app.get("/investments/:id", async (req, res) => {
   const {id} = req.params
-  const investment = await new Promise((resolve, reject) => {
+  const investments = await new Promise((resolve, reject) => {
     request.get(`${config.investmentsServiceUrl}/investments/${id}`, (e, r, investments) => {
     if (e) {
       console.error(e)
@@ -21,9 +21,16 @@ app.get("/investments/:id", async (req, res) => {
     })
   })
 
-  res.send(investment)
+  res.send(investments)
 
-  console.table(investment)
+  console.table(investments)
+  console.table(investments.holdings)
+
+  const companyData = []
+
+  for (const holding of investments.holdings){
+    console.table(holding)
+  }
 })
 
 app.listen(config.port, (err) => {
