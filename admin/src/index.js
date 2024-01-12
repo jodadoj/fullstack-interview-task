@@ -14,53 +14,46 @@ function fetchInvestment(id){
       url: `${config.investmentsServiceUrl}/investments/${id}`, 
       json: true
     }, (e, r, investmentBody) => {
-  if (e) {
-    console.error(e)
-    res.send(500)
-    reject(e)
-  }
-    const investmentResponse = investmentBody
-    resolve(investmentResponse[0])
+    if (e) {
+      console.error(e)
+      res.send(500)
+      reject(e)
+    }
+      const investmentResponse = investmentBody
+      resolve(investmentResponse[0])
+    })
+  })
+}
+
+function fetchCompany(id){
+  return new Promise((resolve, reject) => {
+    request.get(
+    {
+      url: `${config.financialCompaniesServiceUrl}/companies/${currentId}`, 
+      json: true
+    }, (e, r, companyBody) => {
+    if (e) {
+      console.error(e)
+      res.send(500)
+      reject(e)
+    }
+    const companyResponse = companyBody
+    resolve(companyResponse)
   })
 })
-
 }
 
 app.get("/investments/:id", async (req, res) => {
   const {id} = req.params
   const investments = await fetchInvestment(id)
-  
-  console.table(investments)
-  console.table(investments.holdings)
 
   const companyData = []
 
   for (const holding of investments.holdings){
-    console.table(holding)
     const currentId = holding.id
-    const company = await new Promise((resolve, reject) => {
-      request.get(
-        {
-          url: `${config.financialCompaniesServiceUrl}/companies/${currentId}`, 
-          json: true
-        }, (e, r, companyBody) => {
-          if (e) {
-            console.error(e)
-            res.send(500)
-            reject(e)
-          }
-          const companyResponse = companyBody
-          resolve(companyResponse)
-        })
-      })
-    console.table(company)
+    const company = await fetchCompany(currentId)
     companyData.push(company)
   }
-
-  console.table(companyData)
-
-  //want {csv: 'user, first name, last name, date, holding, value} in csv format
-
   const headers = (
     "User, First Name, Last Name, Date, Holding, Value\n"
   )
@@ -69,30 +62,22 @@ app.get("/investments/:id", async (req, res) => {
   for (const holding in investments.holdings){
     const currentHolding = investments.holdings[holding]
     const holdingPercentage = currentHolding.investmentPercentage
-    console.log(holdingPercentage)
     const investmentValue = holdingPercentage * investments.investmentTotal
-    console.log(investmentValue)
 
     const holdingCSV = (
       `${investments.userId},` +
       `${investments.firstName},` +
       `${investments.lastName},` +
       `${investments.date},` +
-      //holdings will enter the companyData list at the same index as originally found
-      //this method is therefore safer than manipulation using index asuuming awaits work as intended
       `${companyData[holding].name},` + 
       `${investmentValue}\n`
     )
 
-    console.log(holdingCSV)
     rowStrings.push(holdingCSV)
   }
 
   const exportCSVBody = [headers, rowStrings.join("")].join("")
 
-  console.log(exportCSVBody)
-
-  //may need await
   request.post(
   {
     url: `${config.investmentsServiceUrl}/investments/export`, 
