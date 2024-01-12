@@ -17,11 +17,13 @@ app.get("/investments/:id", async (req, res) => {
       reject(e)
     }
       const investmentResponse = JSON.parse(investments)
-      resolve(investmentResponse)
+      resolve(investmentResponse[0])
     })
   })
 
   res.send(investment)
+
+  console.table(investment)
 })
 
 app.listen(config.port, (err) => {
