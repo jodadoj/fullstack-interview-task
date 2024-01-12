@@ -49,9 +49,11 @@ app.get("/investments/:id", async (req, res) => {
         })
       })
       console.table(company)
+      companyData.push(company)
     }
     
-      res.send(investments)
+    console.table(companyData)
+    res.send(investments)
   })
 
 app.listen(config.port, (err) => {
