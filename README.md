@@ -1,3 +1,25 @@
+# Additional notes from candidate
+
+Thank you for taking the time to look over my submission.
+
+I believe I filled all the necessary requirements and may have gotten bogged down a bit with testing. 
+
+I would like to say I could provide more tests for some of the code I think is seperable (such as the loops and such and the other fetch) but it wouldn't be more complex than the test we already have.
+
+I could have added testing for an error but that additionally would increase time but I would like to note it's basically a repeat of the first test but with a mockedError thrown in the callback and rejecting the promise.
+
+I did not add any new routes as I didn't see the purpose. We could maybe change the name of the route from "Investments" but I think this is a miniscule change that's based on preference and the actual usage of the admin system.
+
+If I were making the resource more secure I would check if there were any SQL that was unparameterised in any calls to a database and I would try to prevent any unauthorised IPs from accessing the system (assuming a company VPN can be used, we could limit to only those IP addresses).
+
+I would have liked to explore Ramda and functional code more but I was unfamiliar with the library. I will investigate this in my free time and perhaps be able to answer how using events driven code would have made testing simpler.
+
+I updated the packages. Some versioning issues still remain from the depreciated packages which were optional to replace. I chose to leave these to save time.
+
+I would finally note that I assumed we had to send a literal csv to the endpoint so I could change the format of the string easily but it made the most sense that this would be desirable.
+
+Thank you again and I hope this submission follows logically and is suitable!
+
 # Moneyhub Tech Test - Investments and Holdings
 
 At Moneyhub we use microservices to partition and separate the concerns of the codebase. In this exercise we have given you an example `admin` service and some accompanying services to work with. In this case the admin service backs a front end admin tool allowing non-technical staff to interact with data.
