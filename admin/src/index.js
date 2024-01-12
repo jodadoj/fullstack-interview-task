@@ -7,15 +7,18 @@ const app = express()
 
 app.use(bodyParser.json({limit: "10mb"}))
 
-app.get("/investments/:id", (req, res) => {
+app.get("/investments/:id", async (req, res) => {
   const {id} = req.params
-  const investment = request.get(`${config.investmentsServiceUrl}/investments/${id}`, (e, r, investments) => {
+  const investment = await new Promise((resolve, reject) => {
+    request.get(`${config.investmentsServiceUrl}/investments/${id}`, (e, r, investments) => {
     if (e) {
       console.error(e)
       res.send(500)
-    } else {
-      console.table(investments)
+      reject(e)
     }
+      const investmentResponse = JSON.parse(investments)
+      resolve(investmentResponse)
+    })
   })
 
   res.send(investment)
