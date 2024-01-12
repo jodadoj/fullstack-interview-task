@@ -61,7 +61,26 @@ app.get("/investments/:id", async (req, res) => {
       console.log(investmentValue)
     }
 
-    res.send(investments)
+    
+  const exportJson = await new Promise((resolve, reject) => {
+    request.post(
+      {
+        url: `${config.investmentsServiceUrl}/investments/export`, 
+        json: true,
+        exportBody: investments
+      }, (e, r, exportBody) => {
+    if (e) {
+      console.error(e)
+      res.send(500)
+      reject(e)
+    }
+      const exportResponse = exportBody
+      resolve(exportResponse)
+    })
+  })
+
+
+    res.send(exportJson)
   })
 
 app.listen(config.port, (err) => {
