@@ -24,9 +24,7 @@ app.get("/investments/:id", async (req, res) => {
       resolve(investmentResponse[0])
     })
   })
-
-  res.send(investments)
-
+  
   console.table(investments)
   console.table(investments.holdings)
 
@@ -35,9 +33,26 @@ app.get("/investments/:id", async (req, res) => {
   for (const holding of investments.holdings){
     console.table(holding)
     const currentId = holding.id
-
-  }
-})
+    const company = await new Promise((resolve, reject) => {
+      request.get(
+        {
+          url: `${config.financialCompaniesServiceUrl}/companies/${currentId}`, 
+          json: true
+        }, (e, r, companyBody) => {
+          if (e) {
+            console.error(e)
+            res.send(500)
+            reject(e)
+          }
+          const companyResponse = companyBody
+          resolve(companyResponse)
+        })
+      })
+      console.table(company)
+    }
+    
+      res.send(investments)
+  })
 
 app.listen(config.port, (err) => {
   if (err) {
