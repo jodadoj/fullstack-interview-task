@@ -7,23 +7,28 @@ const app = express()
 
 app.use(bodyParser.json({limit: "10mb"}))
 
+function fetchInvestment(id){
+  return new Promise((resolve, reject) => {
+  request.get(
+    {
+      url: `${config.investmentsServiceUrl}/investments/${id}`, 
+      json: true
+    }, (e, r, investmentBody) => {
+  if (e) {
+    console.error(e)
+    res.send(500)
+    reject(e)
+  }
+    const investmentResponse = investmentBody
+    resolve(investmentResponse[0])
+  })
+})
+
+}
+
 app.get("/investments/:id", async (req, res) => {
   const {id} = req.params
-  const investments = await new Promise((resolve, reject) => {
-    request.get(
-      {
-        url: `${config.investmentsServiceUrl}/investments/${id}`, 
-        json: true
-      }, (e, r, investmentBody) => {
-    if (e) {
-      console.error(e)
-      res.send(500)
-      reject(e)
-    }
-      const investmentResponse = investmentBody
-      resolve(investmentResponse[0])
-    })
-  })
+  const investments = await fetchInvestment(id)
   
   console.table(investments)
   console.table(investments.holdings)
@@ -99,7 +104,6 @@ app.get("/investments/:id", async (req, res) => {
       res.send(500)
     }
   })
-
 
   res.json({csv: exportCSVBody})
 })
