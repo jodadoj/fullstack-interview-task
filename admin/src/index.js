@@ -54,6 +54,12 @@ app.get("/investments/:id", async (req, res) => {
 
     console.table(companyData)
 
+    //want {csv: 'user, first name, last name, date, holding, value} in csv format
+
+    const headers = (
+      "User, First Name, Last Name, Date, Holding, Value\n"
+    )
+
     for (const holding in investments.holdings){
       const holdingPercentage = investments.holdings[holding].investmentPercentage
       console.log(holdingPercentage)
@@ -66,7 +72,7 @@ app.get("/investments/:id", async (req, res) => {
   {
     url: `${config.investmentsServiceUrl}/investments/export`, 
     json: true,
-    body: investments
+    body: {csv: headers}
   }, (e, r, body) => {
     if (e) {
       console.error(e)
