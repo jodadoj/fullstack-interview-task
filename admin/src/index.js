@@ -51,8 +51,14 @@ app.get("/investments/:id", async (req, res) => {
       console.table(company)
       companyData.push(company)
     }
-    
+
     console.table(companyData)
+
+    for (const holding in investments.holdings){
+      const holdingPercentage = investments.holdings[holding].investmentPercentage
+      console.log(holdingPercentage)
+    }
+
     res.send(investments)
   })
 
