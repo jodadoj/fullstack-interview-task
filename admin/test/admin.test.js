@@ -1,6 +1,6 @@
 const request = require("request")
 const config = require("config")
-const {fetchInvestment} = require("../src/index")
+const {fetchInvestment} = require("../src/app")
 
 jest.mock("request", () => ({get: jest.fn()}))
 jest.mock("config", () => ({investmentsServiceUrl: "http://localhost:8081"}))
