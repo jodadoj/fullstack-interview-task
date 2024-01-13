@@ -9,13 +9,8 @@ const app = express()
 app.use(bodyParser.json({limit: "10mb"}))
 
 const getInvestment = R.pipeWith(
-  (func, input) => Promise.resolve(input).then(func), [
-    R.pipe(
-      R.prop('params'), 
-      R.prop('id'),
-      fetchInvestment
-    )
-  ]
+  (func, input) => Promise.resolve(input).then(func), 
+  [R.pipe(R.prop('params'), R.prop('id'),fetchInvestment)]
 )
 
 function fetchInvestment(id){
