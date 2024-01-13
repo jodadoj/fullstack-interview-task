@@ -8,7 +8,15 @@ const app = express()
 
 app.use(bodyParser.json({limit: "10mb"}))
 
-const getID = R.pipe(R.prop('params'), R.prop('id'))
+const getInvestment = R.pipeWith(
+  (func, input) => Promise.resolve(input).then(func), [
+    R.pipe(
+      R.prop('params'), 
+      R.prop('id'),
+      fetchInvestment
+    )
+  ]
+)
 
 function fetchInvestment(id){
   return new Promise((resolve, reject) => {
@@ -47,10 +55,7 @@ function fetchCompany(id){
 }
 
 app.get("/investments/:id", async (req, res) => {
-  const {id} = req.params
-  const temp = getID(req)
-  console.table(temp)
-  const investments = await fetchInvestment(id)
+  const investments = await getInvestment(req)
 
   const companyData = []
 
