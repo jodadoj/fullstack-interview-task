@@ -11,6 +11,6 @@ app.listen(config.port, (err) => {
     }
     console.log(`Server running on port ${config.port}`)
     
-    userLogger.log("info", `Server began running on port ${config.port}`);
+    userLogger.log("info", `Server began running on port ${config.port}`)
   })
   
