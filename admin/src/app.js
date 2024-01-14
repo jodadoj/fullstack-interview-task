@@ -3,6 +3,7 @@ const bodyParser = require("body-parser")
 const config = require("config")
 const request = require("request")
 const R = require("ramda")
+const userLogger = require("./util/logger")
 
 const app = express()
 
@@ -61,6 +62,7 @@ function fetchCompany(id){
 }
 
 app.get("/investments/:id", async (req, res) => {
+  userLogger.log("info", "Begining to attempt to fetch investment data");
   const investments = await getInvestment(req)
 
   const companyData = []
