@@ -1,37 +1,20 @@
-const request = require("request");
-const config = require("config");
-const { fetchInvestment } = require("../src/app");
+const chai = require("chai")
+const chaiHttp = require("chai-http")
+const expect = chai.expect
+chai.use(chaiHttp)
 
-jest.mock("request", () => ({
-  get: jest.fn(),
-}));
-jest.mock("config", () => ({
-  investmentsServiceUrl: "",
-  financialCompaniesServiceUrl: "",
-}));
-
-describe("Fetch investment", () => {
-  it("Gets the data of a given investment via a given id", () => {
+describe("Activate server", () => {
+  it("Sets the server to listen to responses on the given port", (done) => {
     //arrange
-    const expectedResponse = {};
-    const givenId = 0;
+    const adminUrl = "localhost:8083"
     //act
-    request.get.mockImplementation(async () => {
-      callback(expectedResponse);
-      const fetchResponse = await fetchInvestment(givenId);
+    chai.request(adminUrl)
+    .get("/")
+    .end( (err, res) => {
       //assert
-      expect(fetchResponse).toEqual(expectedResponse);
-    });
-  });
-  it("Returns an error when issues occur during the request", () => {
-    //arrange
-    const mockedError = "boo";
-    const givenId = 0;
-    //act
-    request.get.mockRejectedValue(async () => {
-      callback(new Error(mockedError));
-      //assert
-      expect(fetchInvestment(givenId)).rejects.toThrow(mockedError);
-    });
-  });
-});
+      expect(res).to.have.status(200)
+      expect(res.text).to.equal("")
+      done()
+    })
+  })
+})

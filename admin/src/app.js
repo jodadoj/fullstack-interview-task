@@ -1,5 +1,4 @@
 const express = require("express")
-const bodyParser = require("body-parser")
 const config = require("config")
 const request = require("request")
 const R = require("ramda")
@@ -7,25 +6,14 @@ const userLogger = require("./util/logger")
 
 const app = express()
 
-app.use(bodyParser.json({limit: "10mb"}))
+app.use(express.json({limit: "10mb"}))
 
-const getInvestment = R.pipeWith(
+const getInvestments = R.pipeWith(
   (func, input) => Promise.resolve(input).then(func), 
-  [R.pipe(R.prop('params'), R.prop('id'),fetchInvestment)]
+  [R.pipe(R.prop('params'), R.prop('id'),fetchInvestments)]
 )
 
-const getCompany = R.pipeWith(
-  (func, input) => Promise.resolve(input).then(func), 
-  [R.pipe(R.prop('id'), fetchCompany)]
-)
-
-// function getNameID(company){
-//   console.table(company)
-//   console.table({id: company.id, name: company.name})
-//   return {id: company.id, name: company.name}
-// }
-
-function fetchInvestment(id){
+function fetchInvestments(id){
   const hostUrl = config.investmentsServiceUrl
   userLogger.log("info", `Attempting to fetch user ${id} investment data from ${hostUrl}`)
   return new Promise((resolve, reject) => {
@@ -78,7 +66,7 @@ async function getCSVString(investments){
   for (const holding of investments.holdings){
     const holdingPercentage = holding.investmentPercentage
     const investmentValue = holdingPercentage * investments.investmentTotal
-    const company = await getCompany(holding)
+    const company = await fetchCompany(holding.id)
     
     const holdingCSV = (
       `${investments.userId},` +
@@ -118,10 +106,10 @@ function sendCSV(CSVString){
   })
 }
 
-const exportCSV = R.pipeWith(
-  (func, input) => Promise.resolve(input).then(func), 
-  [R.pipe(getInvestment, getCSVString, sendCSV)]
-)
+// const exportCSV = R.pipeWith(
+//   (func, input) => Promise.resolve(input).then(func), 
+//   [R.pipe(getInvestments, getCSVString, sendCSV)]
+// )
 
 app.get("/investments/:id", async (req, res) => {
   userLogger.log("info", "Begining to attempt to fetch investment data");
@@ -131,10 +119,12 @@ app.get("/investments/:id", async (req, res) => {
 
   //may attempt to put everything into one statement
   // res.json(exportCSV(req))
-
-  res.json(await sendCSV(await getCSVString(await getInvestment(req))))
-
+  res.json(await sendCSV(await getCSVString(await getInvestments(req))))
 })
 
-module.exports = {fetchInvestment}
+app.get("/", (req, res) => {
+  res.status(200).send("")
+})
+
+module.exports = {fetchInvestments}
 module.exports = app
