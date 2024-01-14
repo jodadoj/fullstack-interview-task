@@ -97,7 +97,7 @@ async function getCSVString(investments){
 
 function sendCSV(CSVString){
   const hostUrl = config.investmentsServiceUrl
-  userLogger.log("info", `Attempting to send user CSV data to ${hostUrl}`)
+  userLogger.log("info", `Attempting to send user CSV data ${CSVString} to ${hostUrl}`)
   return new Promise((resolve, reject) => {
   request.post(
     {
@@ -106,12 +106,12 @@ function sendCSV(CSVString){
       body: {csv: CSVString}
     }, (err, r, body) => {
     if (err) {
-      userLogger.log("error",`Failed to send user CSV data to  ${hostUrl} due to error "${err}"`)
+      userLogger.log("error",`Failed to send user CSV data ${CSVString} to  ${hostUrl} due to error "${err}"`)
       console.error(err)
       res.send(500)
       reject(err)
     }
-      userLogger.log("info", `Successfully sent user CSV data to ${hostUrl}`)
+      userLogger.log("info", `Successfully sent user CSV data ${CSVString} to ${hostUrl}`)
       const CSVResponse = {csv: CSVString}
       resolve(CSVResponse)
     })
