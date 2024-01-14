@@ -44,7 +44,6 @@ function fetchInvestment(id){
 }
 
 function fetchCompany(id){
-  console.log(`given id was ${id}`)
   return new Promise((resolve, reject) => {
     request.get(
     {
@@ -66,26 +65,6 @@ function sendCSV(investments, companyData){
   const headers = (
     "User,FirstName,LastName,Date,Holding,Value\n"
   )
-  const rowStrings = []
-
-  for (const holding in investments.holdings){
-    const currentHolding = investments.holdings[holding]
-    const holdingPercentage = currentHolding.investmentPercentage
-    const investmentValue = holdingPercentage * investments.investmentTotal
-
-    const holdingCSV = (
-      `${investments.userId},` +
-      `${investments.firstName},` +
-      `${investments.lastName},` +
-      `${investments.date},` +
-      `${companyData[holding].name},` + 
-      `${investmentValue}\n`
-    )
-
-    rowStrings.push(holdingCSV)
-  }
-
-  const exportCSVBody = [headers, rowStrings.join("")].join("")
 
   request.post(
   {
@@ -106,37 +85,28 @@ app.get("/investments/:id", async (req, res) => {
   userLogger.log("info", "Begining to attempt to fetch investment data");
   const investments = await getInvestment(req)
 
-  const companyData = {}
-
-  for (const holding of investments.holdings){
-    console.table(holding)
-    const company = await getCompany(holding)
-    console.table(company)
-    companyData[company.id] = company.name
-  }
-
-  console.table(companyData)
-  const headers = (
-    "User,FirstName,LastName,Date,Holding,Value\n"
-  )
   const rowStrings = []
 
-  for (const holding in investments.holdings){
-    const currentHolding = investments.holdings[holding]
-    const holdingPercentage = currentHolding.investmentPercentage
+  for (const holding of investments.holdings){
+    const holdingPercentage = holding.investmentPercentage
     const investmentValue = holdingPercentage * investments.investmentTotal
-
+    const company = await getCompany(holding)
+    
     const holdingCSV = (
       `${investments.userId},` +
       `${investments.firstName},` +
       `${investments.lastName},` +
       `${investments.date},` +
-      `${companyData[currentHolding.id]},` + 
+      `${company.name},` + 
       `${investmentValue}\n`
     )
-
+    
     rowStrings.push(holdingCSV)
   }
+
+  const headers = (
+    "User,FirstName,LastName,Date,Holding,Value\n"
+  )
 
   const exportCSVBody = [headers, rowStrings.join("")].join("")
 
