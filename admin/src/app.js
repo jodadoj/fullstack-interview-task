@@ -19,11 +19,11 @@ const getCompany = R.pipeWith(
   [R.pipe(R.prop('id'), fetchCompany)]
 )
 
-function getNameID(company){
-  console.table(company)
-  console.table({id: company.id, name: company.name})
-  return {id: company.id, name: company.name}
-}
+// function getNameID(company){
+//   console.table(company)
+//   console.table({id: company.id, name: company.name})
+//   return {id: company.id, name: company.name}
+// }
 
 function fetchInvestment(id){
   const hostUrl = config.investmentsServiceUrl
@@ -95,9 +95,9 @@ async function getCSVString(investments){
   return [headers, rowStrings.join("")].join("")
 }
 
-function sendCSV(CSVString, id){
+function sendCSV(CSVString){
   const hostUrl = config.investmentsServiceUrl
-  userLogger.log("info", `Attempting to send user ${id} CSV data to ${hostUrl}`)
+  userLogger.log("info", `Attempting to send user CSV data to ${hostUrl}`)
   return new Promise((resolve, reject) => {
   request.post(
     {
@@ -106,24 +106,34 @@ function sendCSV(CSVString, id){
       body: {csv: CSVString}
     }, (err, r, body) => {
     if (err) {
-      userLogger.log("error",`Failed to send user ${id} CSV data to  ${hostUrl} due to error "${err}"`)
+      userLogger.log("error",`Failed to send user CSV data to  ${hostUrl} due to error "${err}"`)
       console.error(err)
       res.send(500)
       reject(err)
     }
-      userLogger.log("info", `Successfully sent user ${id} CSV data to ${hostUrl}`)
+      userLogger.log("info", `Successfully sent user CSV data to ${hostUrl}`)
       const CSVResponse = {csv: CSVString}
       resolve(CSVResponse)
     })
   })
-  // return {csv: CSVString}
 }
+
+const exportCSV = R.pipeWith(
+  (func, input) => Promise.resolve(input).then(func), 
+  [R.pipe(getInvestment, getCSVString, sendCSV)]
+)
 
 app.get("/investments/:id", async (req, res) => {
   userLogger.log("info", "Begining to attempt to fetch investment data");
-  const investments = await getInvestment(req)
-  const exportCSVBody = await getCSVString(investments)
-  res.json(await sendCSV(exportCSVBody, investments.id))
+  // const investments = await getInvestment(req)
+  // const exportCSVBody = await getCSVString(investments)
+  // res.json(await sendCSV(exportCSVBody))
+
+  //may attempt to put everything into one statement
+  // res.json(exportCSV(req))
+
+  res.json(await sendCSV(await getCSVString(await getInvestment(req))))
+
 })
 
 module.exports = {fetchInvestment}
