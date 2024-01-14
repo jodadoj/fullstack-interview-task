@@ -13,6 +13,17 @@ const getInvestment = R.pipeWith(
   [R.pipe(R.prop('params'), R.prop('id'),fetchInvestment)]
 )
 
+const getCompany = R.pipeWith(
+  (func, input) => Promise.resolve(input).then(func), 
+  [R.pipe(R.prop('id'), fetchCompany
+  // , getNameID
+  )]
+)
+
+function getNameID(company){
+  return {id: company.id ?? null, name: company.name ?? null}
+}
+
 function fetchInvestment(id){
   return new Promise((resolve, reject) => {
   request.get(
@@ -55,12 +66,11 @@ app.get("/investments/:id", async (req, res) => {
   const companyData = []
 
   for (const holding of investments.holdings){
-    const currentId = holding.id
-    const company = await fetchCompany(currentId)
+    const company = await getCompany(holding)
     companyData.push(company)
   }
   const headers = (
-    "User, First Name, Last Name, Date, Holding, Value\n"
+    "User,FirstName,LastName,Date,Holding,Value\n"
   )
   const rowStrings = []
 
