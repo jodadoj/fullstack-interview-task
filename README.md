@@ -2,15 +2,21 @@
 
 NOTE: this branch was made after submission for the sake of completion and to play around with Ramda js.
 
-Chnages that were made:
+Changes that were made:
 
-Decoupled the server start/listening from requests for testing
-Added logging
-Started using Ramda to manipulate data and requests
-Removed the second loop and generally tried to clean up logic
-Added error testing, cleaned up arrange, act, assert blocks and removed unnecessary private data
-Removed unnecessary body-parser dependency
-Uninstalled jest and reworked API testing to use mocha and chai
+- Decoupled the server start/listening from requests for testing
+
+- Added logging
+
+- Started using Ramda to manipulate data and requests
+
+- Removed the second loop and generally tried to clean up logic
+
+- Added error testing, cleaned up arrange, act, assert blocks and removed unnecessary private data
+
+- Removed unnecessary body-parser dependency
+
+- Uninstalled jest and reworked API testing to use mocha and chai
 
 ---
 
